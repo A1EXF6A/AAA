@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+
+namespace OrdenamientoIndices
+{
+    // --- Principio OCP y LSP ---
+    interface IComparador
+    {
+        bool Comparar(int a, int b);
+    }
+
+    class ComparadorAscendente : IComparador
+    {
+        public bool Comparar(int a, int b)
+        {
+            return a < b;
+        }
+    }
+
+    class OrdenadorIndices
+    {
+        // --- Principio SRP ---
+        public static List<int> ObtenerIndicesOrdenados(List<int> vector, IComparador comparador)
+        {
+            int n = vector.Count;
+            List<int> indices = new List<int>();
+
+            for (int i = 0; i < n; i++)
+            {
+                indices.Add(i);
+            }
+
+            int i = 0;
+            do
+            {
+                int j = i + 1;
+                do
+                {
+                    if (j < n && comparador.Comparar(vector[indices[j]], vector[indices[i]]))
+                    {
+                        // Intercambiar índices
+                        int temp = indices[i];
+                        indices[i] = indices[j];
+                        indices[j] = temp;
+                    }
+                    j++;
+                } while (j < n);
+                i++;
+            } while (i < n - 1);
+
+            return indices;
+        }
+    }
+
+    class Impresora
+    {
+        // --- Principio SRP ---
+        public static void ImprimirOrdenadoPorIndices(List<int> vector, List<int> indices)
+        {
+            Console.WriteLine("Vector ordenado (usando vector de índices):");
+            foreach (int idx in indices)
+            {
+                Console.Write(vector[idx] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.Write("Ingrese la cantidad de elementos: ");
+            int n = int.Parse(Console.ReadLine());
+
+            List<int> vector = new List<int>();
+            Console.WriteLine($"Ingrese los {n} elementos:");
+            for (int i = 0; i < n; i++)
+            {
+                vector.Add(int.Parse(Console.ReadLine()));
+            }
+
+            IComparador comparador = new ComparadorAscendente();
+
+            List<int> indicesOrdenados = OrdenadorIndices.ObtenerIndicesOrdenados(vector, comparador);
+
+            Impresora.ImprimirOrdenadoPorIndices(vector, indicesOrdenados);
+        }
+    }
+}
